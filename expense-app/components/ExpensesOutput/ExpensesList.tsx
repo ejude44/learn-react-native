@@ -1,12 +1,20 @@
-import { FlatList, ListRenderItemInfo, Text } from 'react-native';
+import { FlatList, ListRenderItemInfo } from 'react-native';
 import { Expense } from '../../model/expenses.model';
+import ExpenseItem from './ExpenseItem';
 
 interface Props {
   expenses: Expense[];
 }
 
 function renderExpenseItem(itemData: ListRenderItemInfo<Expense>) {
-  return <Text>{itemData.item.description}</Text>;
+  return (
+    <ExpenseItem
+      id={itemData.item.id}
+      description={itemData.item.description}
+      amount={itemData.item.amount}
+      date={itemData.item.date}
+    />
+  );
 }
 
 function ExpensesList({ expenses }: Props) {

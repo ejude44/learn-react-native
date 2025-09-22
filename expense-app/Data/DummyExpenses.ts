@@ -35,6 +35,42 @@ const DUMMY_EXPENSES: Expense[] = [
     amount: 1900.99,
     date: new Date('2024-01-28'),
   },
+  {
+    id: generateId(),
+    description: 'A big book',
+    amount: 19.99,
+    date: new Date('2025-01-2'),
+  },
+  {
+    id: generateId(),
+    description: 'a house',
+    amount: 1900.99,
+    date: new Date('2024-01-28'),
+  },
+  {
+    id: generateId(),
+    description: 'a small cat',
+    amount: 1900.99,
+    date: new Date('2024-01-28'),
+  },
+  {
+    id: generateId(),
+    description: 'A big book',
+    amount: 19.99,
+    date: new Date('2025-09-20'),
+  },
+  {
+    id: generateId(),
+    description: 'a house',
+    amount: 1900.99,
+    date: new Date('2024-01-28'),
+  },
+  {
+    id: generateId(),
+    description: 'a small cat',
+    amount: 1900.99,
+    date: new Date('2024-01-28'),
+  },
 ];
 
 export { DUMMY_EXPENSES };

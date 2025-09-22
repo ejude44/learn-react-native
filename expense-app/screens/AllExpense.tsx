@@ -1,7 +1,16 @@
 import ExpensesOutput from '../components/ExpensesOutput/ExpensesOutput';
+import { useExpenses } from '../providers/ExpenseContextProvider';
 
 function AllExpense() {
-  return <ExpensesOutput expensesPeriod={'total'} />;
+  const { expenses } = useExpenses();
+
+  return (
+    <ExpensesOutput
+      fallbackText={'No expenses'}
+      expenses={expenses}
+      expensesPeriod={'total'}
+    />
+  );
 }
 
 export default AllExpense;

@@ -9,13 +9,15 @@ import { Expense } from '../model/expenses.model';
 import { DUMMY_EXPENSES } from '../Data';
 
 type ExpenseAction =
-  | { type: 'ADD'; payload: Expense }
+  | { type: 'ADD'; payload: ExpenseData }
   | { type: 'DELETE'; payload: string }
   | { type: 'UPDATE'; payload: { id: string; expense: Expense } };
 
+export type ExpenseData = Omit<Expense, 'id'>;
+
 interface ExpenseContextValue {
   expenses: Expense[];
-  addExpense: (expense: Expense) => void;
+  addExpense: (expense: ExpenseData) => void;
   deleteExpense: (id: string) => void;
   updateExpense: (_id: string, expense: Expense) => void;
 }
@@ -63,7 +65,7 @@ export const ExpenseProvider = ({ children }: ExpenseProviderProps) => {
   const value = useMemo(
     () => ({
       expenses: expensesState,
-      addExpense: (expense: Expense) =>
+      addExpense: (expense: ExpenseData) =>
         dispatch({ type: 'ADD', payload: expense }),
       deleteExpense: (id: string) => dispatch({ type: 'DELETE', payload: id }),
       updateExpense: (id: string, expense: Expense) =>

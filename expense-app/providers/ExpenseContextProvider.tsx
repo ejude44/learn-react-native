@@ -5,6 +5,7 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useState,
 } from 'react';
 import { Expense } from '../model/expenses.model';
 import { fetchExpenses } from '../utils/http';
@@ -20,6 +21,9 @@ interface ExpenseContextValue {
   addExpense: (expense: Expense) => void;
   deleteExpense: (id: string) => void;
   updateExpense: (id: string, expense: Expense) => void;
+  isLoading: boolean;
+  error: string;
+  setError: (error: string) => void;
 }
 
 export const ExpenseContext = createContext<ExpenseContextValue | null>(null);
@@ -57,11 +61,25 @@ function expensesReducer(state: Expense[], action: ExpenseAction): Expense[] {
 
 export const ExpenseProvider = ({ children }: ExpenseProviderProps) => {
   const [expensesState, dispatch] = useReducer(expensesReducer, []);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string>('');
+
+  async function fetchExpenseFromBackend() {
+    try {
+      setIsLoading(true);
+      await fetchExpenses().then((expenses) => {
+        dispatch({ type: 'SET', payload: expenses });
+      });
+    } catch (e) {
+      setError(`Something went wrong fetching the expenses: ${e}`);
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   useEffect(() => {
-    fetchExpenses().then((expenses) => {
-      dispatch({ type: 'SET', payload: expenses });
-    });
+    fetchExpenseFromBackend();
   }, []);
 
   const value = useMemo(
@@ -75,6 +93,9 @@ export const ExpenseProvider = ({ children }: ExpenseProviderProps) => {
           type: 'UPDATE',
           payload: { id, expense },
         }),
+      isLoading,
+      error,
+      setError,
     }),
     [expensesState]
   );

@@ -1,13 +1,14 @@
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert, Text } from 'react-native';
 import { RootStackParamList } from '../model/navigation';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { GlobalStyles } from '../constants/styles';
 import { useExpenses } from '../providers/ExpenseContextProvider';
 import { Expense, ExpenseData } from '../model/expenses.model';
 import ExpenseForm from '../components/ExpenseForm/ExpenseForm';
 import IconButton from '../components/ui/IconButton';
 import { deleteExpense, storeExpense, updateExpense } from '../utils/http';
+import LoadingOverlay from '../components/ui/LoadingOverlay';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ManageExpense'>;
 
@@ -24,6 +25,7 @@ function ManageExpense({ route, navigation }: Props) {
   const editedExpense = expenses.find(
     (expense) => expense.id === editedExpenseId
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -33,13 +35,16 @@ function ManageExpense({ route, navigation }: Props) {
 
   async function deleteExpenseHandler() {
     try {
+      setIsLoading(true);
       await deleteExpense(editedExpenseId!);
       deleteExpenseContext(editedExpenseId!);
     } catch (e) {
       Alert.alert(`Failed to delete expense. Please try again.${e}`);
       return;
+    } finally {
+      setIsLoading(false);
     }
-    navigation.goBack();
+    if (!isLoading) navigation.goBack();
   }
 
   function cancelHandler() {
@@ -48,37 +53,52 @@ function ManageExpense({ route, navigation }: Props) {
 
   async function addExpenses(expenseData: ExpenseData) {
     try {
+      setIsLoading(true);
       const result = await storeExpense(expenseData);
       addExpense(result);
     } catch (e) {
       Alert.alert(`Failed to save expense. Please try again.${e}`);
       throw e;
+    } finally {
+      if (!isLoading) setIsLoading(false);
+    }
+  }
+
+  async function updateExpenses(expenseData: ExpenseData) {
+    try {
+      setIsLoading(true);
+      await updateExpense(editedExpenseId!, expenseData);
+      const fullExpense: Expense = {
+        ...expenseData,
+        id: editedExpenseId!,
+        createdAt: editedExpense!.createdAt,
+        updatedAt: new Date(),
+      };
+      updateExpenseContext(editedExpenseId!, fullExpense);
+    } catch (e) {
+      Alert.alert(`Failed to update expense. Please try again.${e}`);
+      return;
+    } finally {
+      if (!isLoading) setIsLoading(false);
     }
   }
 
   async function confirmHandler(expenseData: ExpenseData) {
     if (isEditing) {
-      try {
-        await updateExpense(editedExpenseId!, expenseData);
-        const fullExpense: Expense = {
-          ...expenseData,
-          id: editedExpenseId!,
-          createdAt: editedExpense!.createdAt,
-          updatedAt: new Date(),
-        };
-        updateExpenseContext(editedExpenseId!, fullExpense);
-      } catch (e) {
-        Alert.alert(`Failed to update expense. Please try again.${e}`);
-        return;
-      }
+      await updateExpenses(expenseData);
     } else {
       await addExpenses(expenseData);
     }
     navigation.goBack();
   }
 
+  if (isLoading) {
+    return <LoadingOverlay />;
+  }
+
   return (
     <View style={styles.container}>
+      {isLoading && <Text>Loading...</Text>}
       <ExpenseForm
         onCancel={cancelHandler}
         submitButtonLabel={isEditing ? 'Update' : 'Add'}

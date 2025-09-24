@@ -15,6 +15,7 @@ import IconButton from './components/ui/IconButton';
 import { RootStackParamList, RootTabParamList } from './model/navigation';
 import { ExpenseProvider } from './providers/ExpenseContextProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const BottomTabs = createBottomTabNavigator<RootTabParamList>();
@@ -75,31 +76,33 @@ export default function App() {
     <>
       <StatusBar style="auto" />
       <SafeAreaView style={{ flex: 1 }}>
-        <ExpenseProvider>
-          <NavigationContainer>
-            <Stack.Navigator
-              screenOptions={{
-                headerStyle: {
-                  backgroundColor: GlobalStyles.colors.primary500,
-                },
-                headerTintColor: 'white',
-              }}
-            >
-              <Stack.Screen
-                name="ExpensesOverview"
-                component={ExpensesOverview}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="ManageExpense"
-                component={ManageExpense}
-                options={{
-                  presentation: 'modal',
+        <ErrorBoundary>
+          <ExpenseProvider>
+            <NavigationContainer>
+              <Stack.Navigator
+                screenOptions={{
+                  headerStyle: {
+                    backgroundColor: GlobalStyles.colors.primary500,
+                  },
+                  headerTintColor: 'white',
                 }}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </ExpenseProvider>
+              >
+                <Stack.Screen
+                  name="ExpensesOverview"
+                  component={ExpensesOverview}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="ManageExpense"
+                  component={ManageExpense}
+                  options={{
+                    presentation: 'modal',
+                  }}
+                />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </ExpenseProvider>
+        </ErrorBoundary>
       </SafeAreaView>
     </>
   );

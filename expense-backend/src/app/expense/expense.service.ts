@@ -18,14 +18,14 @@ export class ExpenseService {
     });
   }
 
-  update(id: string, updateExpenseDto: CreateExpenseDto) {
+  async update(id: string, updateExpenseDto: CreateExpenseDto) {
     return this.prisma.expense.update({
       where: { id },
       data: updateExpenseDto,
     });
   }
 
-  remove(id: string) {
+  async remove(id: string) {
     return this.prisma.expense.delete({
       where: { id },
     });

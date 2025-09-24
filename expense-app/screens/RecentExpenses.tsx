@@ -1,8 +1,9 @@
 import ExpensesOutput from '../components/ExpensesOutput/ExpensesOutput';
 import { useExpenses } from '../providers/ExpenseContextProvider';
+import LoadingOverlay from '../components/ui/LoadingOverlay';
 
 function RecentExpenses() {
-  const { expenses } = useExpenses();
+  const { expenses, isLoading } = useExpenses();
 
   const recentExpenses = expenses.filter((expense) => {
     const today = new Date();
@@ -15,6 +16,10 @@ function RecentExpenses() {
     const expenseDate = new Date(expense.date);
     return expenseDate >= date7DaysAgo;
   });
+
+  if (isLoading) {
+    return <LoadingOverlay />;
+  }
 
   return (
     <ExpensesOutput

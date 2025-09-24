@@ -1,8 +1,9 @@
-import { Pressable, View, Text, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { GlobalStyles } from '../../constants/styles';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../model/navigation';
+import { formatDateShort } from '../../utils/formatDateShort';
 
 interface Props {
   id?: string;
@@ -18,7 +19,6 @@ function ExpenseItem({ description, amount, date, id }: Props) {
   function pressHandler() {
     navigation.navigate('ManageExpense', { expenseId: id });
   }
-
   return (
     <Pressable
       onPress={pressHandler}
@@ -29,7 +29,7 @@ function ExpenseItem({ description, amount, date, id }: Props) {
           <Text style={[styles.textBase, styles.description]}>
             {description}
           </Text>
-          <Text style={styles.textBase}>{date.toDateString()}</Text>
+          <Text style={styles.textBase}>{formatDateShort(date)}</Text>
         </View>
         <View style={styles.amountContainer}>
           <Text style={styles.amount}>{amount.toFixed(2)}</Text>

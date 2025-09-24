@@ -1,4 +1,4 @@
-import { ExpenseData } from '../providers/ExpenseContextProvider';
+import { ExpenseData } from '../model/expenses.model';
 
 export function validateInput(formInput: ExpenseData): {
   isValid: boolean;

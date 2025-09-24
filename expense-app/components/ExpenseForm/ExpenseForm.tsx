@@ -2,10 +2,11 @@ import { View, StyleSheet, Text } from 'react-native';
 import Input from '../Input/Input';
 import { useState } from 'react';
 import Button from '../ui/Button';
-import { ExpenseData } from '../../providers/ExpenseContextProvider';
 import { validateInput } from '../../utils/validateInput';
 import { isDefined } from '../../utils/isDefined';
 import { GlobalStyles } from '../../constants/styles';
+import { ExpenseData } from '../../model/expenses.model';
+import { formatDateToInput } from '../../utils/formatDateToInput';
 
 interface InputValue {
   amount: string;
@@ -28,7 +29,7 @@ function ExpenseForm({
 }: Props) {
   const [inputValue, setInputValue] = useState<InputValue>({
     amount: isDefined(defaultValues) ? defaultValues.amount.toString() : '',
-    date: isDefined(defaultValues) ? defaultValues.date.toDateString() : '',
+    date: isDefined(defaultValues) ? formatDateToInput(defaultValues.date) : '',
     description: isDefined(defaultValues) ? defaultValues.description : '',
   });
 
@@ -55,7 +56,7 @@ function ExpenseForm({
 
     const { isValid, error } = validateInput(expenseData);
 
-    if (isValid) {
+    if (isValid && expenseData) {
       onSubmit(expenseData);
       setFormError('');
     } else {

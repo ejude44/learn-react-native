@@ -18,6 +18,14 @@ export default [
           jsx: true,
         },
       },
+      globals: {
+        // Add React Native globals
+        fetch: 'readonly',
+        Response: 'readonly',
+        RequestInit: 'readonly',
+        console: 'readonly',
+        Error: 'readonly',
+      },
     },
     plugins: {
       '@typescript-eslint': typescript,

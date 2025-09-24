@@ -1,19 +1,25 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { RootStackParamList } from '../model/navigation';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useLayoutEffect } from 'react';
 import { GlobalStyles } from '../constants/styles';
-import { ExpenseData, useExpenses } from '../providers/ExpenseContextProvider';
-import { Expense } from '../model/expenses.model';
+import { useExpenses } from '../providers/ExpenseContextProvider';
+import { Expense, ExpenseData } from '../model/expenses.model';
 import ExpenseForm from '../components/ExpenseForm/ExpenseForm';
 import IconButton from '../components/ui/IconButton';
+import { deleteExpense, storeExpense, updateExpense } from '../utils/http';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ManageExpense'>;
 
 function ManageExpense({ route, navigation }: Props) {
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
-  const { deleteExpense, updateExpense, expenses, addExpense } = useExpenses();
+  const {
+    deleteExpense: deleteExpenseContext,
+    expenses,
+    addExpense,
+    updateExpense: updateExpenseContext,
+  } = useExpenses();
 
   const editedExpense = expenses.find(
     (expense) => expense.id === editedExpenseId
@@ -25,8 +31,14 @@ function ManageExpense({ route, navigation }: Props) {
     });
   }, [navigation, isEditing]);
 
-  function deleteExpenseHandler() {
-    deleteExpense(editedExpenseId!);
+  async function deleteExpenseHandler() {
+    try {
+      await deleteExpense(editedExpenseId!);
+      deleteExpenseContext(editedExpenseId!);
+    } catch (e) {
+      Alert.alert(`Failed to delete expense. Please try again.${e}`);
+      return;
+    }
     navigation.goBack();
   }
 
@@ -34,15 +46,33 @@ function ManageExpense({ route, navigation }: Props) {
     navigation.goBack();
   }
 
-  function confirmHandler(expenseData: ExpenseData) {
-    if (isEditing)
-      updateExpense(editedExpenseId!, { ...expenseData, id: editedExpenseId! });
-    else {
-      const newExpense: Expense = {
-        ...expenseData,
-        id: Math.random().toString(),
-      };
-      addExpense(newExpense);
+  async function addExpenses(expenseData: ExpenseData) {
+    try {
+      const result = await storeExpense(expenseData);
+      addExpense(result);
+    } catch (e) {
+      Alert.alert(`Failed to save expense. Please try again.${e}`);
+      throw e;
+    }
+  }
+
+  async function confirmHandler(expenseData: ExpenseData) {
+    if (isEditing) {
+      try {
+        await updateExpense(editedExpenseId!, expenseData);
+        const fullExpense: Expense = {
+          ...expenseData,
+          id: editedExpenseId!,
+          createdAt: editedExpense!.createdAt,
+          updatedAt: new Date(),
+        };
+        updateExpenseContext(editedExpenseId!, fullExpense);
+      } catch (e) {
+        Alert.alert(`Failed to update expense. Please try again.${e}`);
+        return;
+      }
+    } else {
+      await addExpenses(expenseData);
     }
     navigation.goBack();
   }

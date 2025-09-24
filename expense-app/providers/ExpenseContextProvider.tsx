@@ -2,24 +2,24 @@ import {
   createContext,
   ReactNode,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
 } from 'react';
 import { Expense } from '../model/expenses.model';
-import { DUMMY_EXPENSES } from '../Data';
+import { fetchExpenses } from '../utils/http';
 
 type ExpenseAction =
-  | { type: 'ADD'; payload: ExpenseData }
+  | { type: 'SET'; payload: Expense[] }
+  | { type: 'ADD'; payload: Expense }
   | { type: 'DELETE'; payload: string }
   | { type: 'UPDATE'; payload: { id: string; expense: Expense } };
 
-export type ExpenseData = Omit<Expense, 'id'>;
-
 interface ExpenseContextValue {
   expenses: Expense[];
-  addExpense: (expense: ExpenseData) => void;
+  addExpense: (expense: Expense) => void;
   deleteExpense: (id: string) => void;
-  updateExpense: (_id: string, expense: Expense) => void;
+  updateExpense: (id: string, expense: Expense) => void;
 }
 
 export const ExpenseContext = createContext<ExpenseContextValue | null>(null);
@@ -40,14 +40,10 @@ interface ExpenseProviderProps {
 
 function expensesReducer(state: Expense[], action: ExpenseAction): Expense[] {
   switch (action.type) {
+    case 'SET':
+      return action.payload;
     case 'ADD':
-      return [
-        ...state,
-        {
-          ...action.payload,
-          id: new Date().toString() + Math.random().toString(),
-        },
-      ];
+      return [action.payload, ...state];
     case 'DELETE':
       return state.filter((expense) => expense.id !== action.payload);
     case 'UPDATE':
@@ -60,12 +56,18 @@ function expensesReducer(state: Expense[], action: ExpenseAction): Expense[] {
 }
 
 export const ExpenseProvider = ({ children }: ExpenseProviderProps) => {
-  const [expensesState, dispatch] = useReducer(expensesReducer, DUMMY_EXPENSES);
+  const [expensesState, dispatch] = useReducer(expensesReducer, []);
+
+  useEffect(() => {
+    fetchExpenses().then((expenses) => {
+      dispatch({ type: 'SET', payload: expenses });
+    });
+  }, []);
 
   const value = useMemo(
     () => ({
       expenses: expensesState,
-      addExpense: (expense: ExpenseData) =>
+      addExpense: (expense: Expense) =>
         dispatch({ type: 'ADD', payload: expense }),
       deleteExpense: (id: string) => dispatch({ type: 'DELETE', payload: id }),
       updateExpense: (id: string, expense: Expense) =>

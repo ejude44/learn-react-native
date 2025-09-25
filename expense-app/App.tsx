@@ -21,6 +21,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import { View } from 'react-native';
 import LoadingOverlay from './components/ui/LoadingOverlay';
+import {
+  setupNotifications,
+  scheduleDailyReminder,
+} from './utils/notifications';
+import { useEffect } from 'react';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const BottomTabs = createBottomTabNavigator<RootTabParamList>();
@@ -131,6 +136,17 @@ function RootNavigator() {
 }
 
 export default function App() {
+  useEffect(() => {
+    async function initNotifications() {
+      const hasPermission = await setupNotifications();
+      if (hasPermission) {
+        await scheduleDailyReminder();
+      }
+    }
+
+    initNotifications();
+  }, []);
+
   return (
     <>
       <StatusBar style="auto" />

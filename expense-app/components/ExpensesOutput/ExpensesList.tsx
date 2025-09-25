@@ -14,6 +14,7 @@ function renderExpenseItem(itemData: ListRenderItemInfo<Expense>) {
       amount={itemData.item.amount}
       date={itemData.item.date}
       receiptImage={itemData.item.receiptImage}
+      locationName={itemData.item.locationName}
     />
   );
 }

@@ -18,6 +18,9 @@ export async function storeExpense(expense: ExpenseData) {
         date: expense.date.toISOString(),
         description: expense.description,
         receiptImage: expense.receiptImage,
+        latitude: expense.latitude,
+        longitude: expense.longitude,
+        locationName: expense.locationName,
       }),
       headers: {
         ...authHeaders,
@@ -66,6 +69,9 @@ export async function updateExpense(id: string, expense: ExpenseData) {
         date: expense.date.toISOString(),
         description: expense.description,
         receiptImage: expense.receiptImage,
+        latitude: expense.latitude,
+        longitude: expense.longitude,
+        locationName: expense.locationName,
       }),
       headers: {
         ...authHeaders,

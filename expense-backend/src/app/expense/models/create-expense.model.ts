@@ -3,4 +3,7 @@ export interface CreateExpenseDto {
   date: string;
   description: string;
   receiptImage?: string;
+  latitude?: number;
+  longitude?: number;
+  locationName?: string;
 }

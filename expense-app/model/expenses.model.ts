@@ -6,6 +6,9 @@ export interface Expense {
   createdAt: Date;
   updatedAt: Date;
   receiptImage?: string;
+  latitude?: number;
+  longitude?: number;
+  locationName?: string;
 }
 
 export type ExpenseData = Omit<Expense, 'id' | 'updatedAt' | 'createdAt'>;

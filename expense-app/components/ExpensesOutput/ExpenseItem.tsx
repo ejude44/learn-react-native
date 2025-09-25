@@ -11,15 +11,25 @@ interface Props {
   amount: number;
   date: Date;
   receiptImage?: string;
+  locationName?: string;
 }
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-function ExpenseItem({ description, amount, date, id, receiptImage }: Props) {
+function ExpenseItem({
+  description,
+  amount,
+  date,
+  id,
+  receiptImage,
+  locationName,
+}: Props) {
   const navigation = useNavigation<NavigationProp>();
+
   function pressHandler() {
     navigation.navigate('ManageExpense', { expenseId: id });
   }
+
   return (
     <Pressable
       onPress={pressHandler}
@@ -31,6 +41,9 @@ function ExpenseItem({ description, amount, date, id, receiptImage }: Props) {
             {description}
           </Text>
           <Text style={styles.textBase}>{formatDateShort(date)}</Text>
+          {locationName && (
+            <Text style={styles.locationText}>📍 {locationName}</Text>
+          )}
           {receiptImage && (
             <Image source={{ uri: receiptImage }} style={styles.receiptThumb} />
           )}
@@ -68,6 +81,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 4,
   },
+  locationText: {
+    fontSize: 12,
+    color: GlobalStyles.colors.primary100,
+    marginTop: 2,
+  },
+
   receiptThumb: newStyles.receiptThumb,
   pressed: {
     opacity: 0.75,

@@ -25,7 +25,7 @@ function ExpenseItem({ description, amount, date, id }: Props) {
       style={({ pressed }) => (pressed ? styles.pressed : null)}
     >
       <View style={styles.expenseItem}>
-        <View>
+        <View style={styles.descriptionContainer}>
           <Text style={[styles.textBase, styles.description]}>
             {description}
           </Text>
@@ -60,10 +60,15 @@ const styles = StyleSheet.create({
   textBase: {
     color: GlobalStyles.colors.primary50,
   },
+  descriptionContainer: {
+    flex: 1,
+    marginRight: 8,
+  },
   description: {
     fontSize: 16,
     marginBottom: 4,
     fontWeight: 'bold',
+    flexWrap: 'wrap',
   },
   amountContainer: {
     paddingHorizontal: 12,
@@ -73,6 +78,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 4,
     minWidth: 80,
+    flexShrink: 0,
   },
   amount: {
     color: GlobalStyles.colors.primary500,

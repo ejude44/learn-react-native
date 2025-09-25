@@ -1,7 +1,8 @@
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Image } from 'react-native';
 import Input from '../Input/Input';
 import { useState } from 'react';
 import Button from '../ui/Button';
+import CameraButton from '../ui/CameraButton';
 import { validateInput } from '../../utils/validateInput';
 import { isDefined } from '../../utils/isDefined';
 import { GlobalStyles } from '../../constants/styles';
@@ -12,13 +13,14 @@ interface InputValue {
   amount: string;
   date: string;
   description: string;
+  receiptImage?: string;
 }
 
 interface Props {
   onCancel: () => void;
   submitButtonLabel: string;
-  onSubmit: (_expense: ExpenseData) => void;
-  defaultValues?: ExpenseData;
+  onSubmit: (_expense: ExpenseData & { receiptImage?: string }) => void;
+  defaultValues?: ExpenseData & { receiptImage?: string };
 }
 
 function ExpenseForm({
@@ -31,6 +33,7 @@ function ExpenseForm({
     amount: isDefined(defaultValues) ? defaultValues.amount.toString() : '',
     date: isDefined(defaultValues) ? formatDateToInput(defaultValues.date) : '',
     description: isDefined(defaultValues) ? defaultValues.description : '',
+    receiptImage: defaultValues?.receiptImage || undefined,
   });
 
   const [formError, setFormError] = useState<string>('');
@@ -39,12 +42,17 @@ function ExpenseForm({
     inputIdentifier: keyof InputValue,
     enteredValue: string
   ) {
-    setInputValue((prevState) => {
-      return {
-        ...prevState,
-        [inputIdentifier]: enteredValue,
-      };
-    });
+    setInputValue((prevState) => ({
+      ...prevState,
+      [inputIdentifier]: enteredValue,
+    }));
+  }
+
+  function handleImageSelected(imageUri: string) {
+    setInputValue((prevState) => ({
+      ...prevState,
+      receiptImage: imageUri,
+    }));
   }
 
   function submitHandler() {
@@ -52,6 +60,7 @@ function ExpenseForm({
       amount: +inputValue.amount,
       date: new Date(inputValue.date),
       description: inputValue.description,
+      receiptImage: inputValue.receiptImage,
     };
 
     const { isValid, error } = validateInput(expenseData);
@@ -67,6 +76,7 @@ function ExpenseForm({
   return (
     <View style={styles.form}>
       <Text style={styles.title}>Your Expense</Text>
+
       <View style={styles.inputRow}>
         <Input
           style={styles.rowInput}
@@ -105,6 +115,18 @@ function ExpenseForm({
         }}
       />
 
+      <CameraButton onImageSelected={handleImageSelected} />
+
+      {inputValue.receiptImage && (
+        <View style={styles.imageContainer}>
+          <Text style={styles.imageLabel}>Receipt:</Text>
+          <Image
+            source={{ uri: inputValue.receiptImage }}
+            style={styles.image}
+          />
+        </View>
+      )}
+
       <View style={styles.buttons}>
         <Button mode={'flat'} onPress={onCancel} style={styles.button}>
           Cancel
@@ -118,6 +140,7 @@ function ExpenseForm({
     </View>
   );
 }
+
 export default ExpenseForm;
 
 const styles = StyleSheet.create({
@@ -151,5 +174,20 @@ const styles = StyleSheet.create({
     color: GlobalStyles.colors.error500,
     margin: 8,
     textAlign: 'center',
+  },
+  imageContainer: {
+    marginVertical: 16,
+    alignItems: 'center',
+  },
+  imageLabel: {
+    color: 'white',
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  image: {
+    width: 200,
+    height: 150,
+    borderRadius: 8,
+    resizeMode: 'cover',
   },
 });

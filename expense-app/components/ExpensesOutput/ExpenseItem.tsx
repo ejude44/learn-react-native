@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Image } from 'react-native';
 import { GlobalStyles } from '../../constants/styles';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -10,11 +10,12 @@ interface Props {
   description: string;
   amount: number;
   date: Date;
+  receiptImage?: string;
 }
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-function ExpenseItem({ description, amount, date, id }: Props) {
+function ExpenseItem({ description, amount, date, id, receiptImage }: Props) {
   const navigation = useNavigation<NavigationProp>();
   function pressHandler() {
     navigation.navigate('ManageExpense', { expenseId: id });
@@ -30,6 +31,9 @@ function ExpenseItem({ description, amount, date, id }: Props) {
             {description}
           </Text>
           <Text style={styles.textBase}>{formatDateShort(date)}</Text>
+          {receiptImage && (
+            <Image source={{ uri: receiptImage }} style={styles.receiptThumb} />
+          )}
         </View>
         <View style={styles.amountContainer}>
           <Text style={styles.amount}>{amount.toFixed(2)}</Text>
@@ -39,6 +43,16 @@ function ExpenseItem({ description, amount, date, id }: Props) {
   );
 }
 export default ExpenseItem;
+
+const newStyles = {
+  receiptThumb: {
+    width: 40,
+    height: 30,
+    borderRadius: 4,
+    marginTop: 4,
+    resizeMode: 'cover' as const,
+  },
+};
 
 const styles = StyleSheet.create({
   expenseItem: {
@@ -54,6 +68,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 4,
   },
+  receiptThumb: newStyles.receiptThumb,
   pressed: {
     opacity: 0.75,
   },

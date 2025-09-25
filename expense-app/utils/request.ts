@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 
-const BASE_URL = 'http://192.168.0.186:4001';
+export const BASE_URL = 'http://192.168.0.186:4001/api';
 
 type Init = RequestInit & {
   fetchErrorMessage?: string;

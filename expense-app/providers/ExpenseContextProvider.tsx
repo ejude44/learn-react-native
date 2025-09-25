@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { Expense } from '../model/expenses.model';
 import { fetchExpenses } from '../utils/http';
+import { useAuth } from './AuthContextProvider';
 
 type ExpenseAction =
   | { type: 'SET'; payload: Expense[] }
@@ -63,6 +64,7 @@ export const ExpenseProvider = ({ children }: ExpenseProviderProps) => {
   const [expensesState, dispatch] = useReducer(expensesReducer, []);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
+  const { user } = useAuth();
 
   async function fetchExpenseFromBackend() {
     try {
@@ -79,8 +81,12 @@ export const ExpenseProvider = ({ children }: ExpenseProviderProps) => {
   }
 
   useEffect(() => {
+    if (!user) {
+      dispatch({ type: 'SET', payload: [] });
+      return;
+    }
     fetchExpenseFromBackend();
-  }, []);
+  }, [user]);
 
   const value = useMemo(
     () => ({
@@ -97,7 +103,7 @@ export const ExpenseProvider = ({ children }: ExpenseProviderProps) => {
       error,
       setError,
     }),
-    [expensesState]
+    [expensesState, error, isLoading]
   );
   return (
     <ExpenseContext.Provider value={value}>{children}</ExpenseContext.Provider>

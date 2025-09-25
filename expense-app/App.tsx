@@ -8,14 +8,19 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ManageExpense from './screens/ManageExpense';
 import RecentExpenses from './screens/RecentExpenses';
 import AllExpense from './screens/AllExpense';
+import LoginScreen from './screens/LoginScreen';
+import SignupScreen from './screens/SignupScreen';
 import { GlobalStyles } from './constants/styles';
 import { Ionicons } from '@expo/vector-icons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import IconButton from './components/ui/IconButton';
 import { RootStackParamList, RootTabParamList } from './model/navigation';
 import { ExpenseProvider } from './providers/ExpenseContextProvider';
+import { AuthProvider, useAuth } from './providers/AuthContextProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
+import { View } from 'react-native';
+import LoadingOverlay from './components/ui/LoadingOverlay';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const BottomTabs = createBottomTabNavigator<RootTabParamList>();
@@ -23,6 +28,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 function ExpensesOverview() {
   const navigation = useNavigation<NavigationProp>();
+  const { logout } = useAuth();
 
   return (
     <BottomTabs.Navigator
@@ -33,14 +39,22 @@ function ExpensesOverview() {
         tabBarActiveTintColor: GlobalStyles.colors.accent500,
         headerRight: ({ tintColor }) => {
           return (
-            <IconButton
-              icon="add"
-              size={24}
-              color={tintColor}
-              onPress={() =>
-                navigation.navigate('ManageExpense', { expenseId: undefined })
-              }
-            />
+            <View style={{ flexDirection: 'row' }}>
+              <IconButton
+                icon="add"
+                size={24}
+                color={tintColor}
+                onPress={() =>
+                  navigation.navigate('ManageExpense', { expenseId: undefined })
+                }
+              />
+              <IconButton
+                icon="log-out"
+                size={24}
+                color={tintColor}
+                onPress={logout}
+              />
+            </View>
           );
         },
       }}
@@ -71,37 +85,64 @@ function ExpensesOverview() {
   );
 }
 
+function AuthNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Signup" component={SignupScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function AppNavigator() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: GlobalStyles.colors.primary500,
+        },
+        headerTintColor: 'white',
+      }}
+    >
+      <Stack.Screen
+        name="ExpensesOverview"
+        component={ExpensesOverview}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ManageExpense"
+        component={ManageExpense}
+        options={{
+          presentation: 'modal',
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function RootNavigator() {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <LoadingOverlay />;
+  }
+
+  return user ? <AppNavigator /> : <AuthNavigator />;
+}
+
 export default function App() {
   return (
     <>
       <StatusBar style="auto" />
       <SafeAreaView style={{ flex: 1 }}>
         <ErrorBoundary>
-          <ExpenseProvider>
-            <NavigationContainer>
-              <Stack.Navigator
-                screenOptions={{
-                  headerStyle: {
-                    backgroundColor: GlobalStyles.colors.primary500,
-                  },
-                  headerTintColor: 'white',
-                }}
-              >
-                <Stack.Screen
-                  name="ExpensesOverview"
-                  component={ExpensesOverview}
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="ManageExpense"
-                  component={ManageExpense}
-                  options={{
-                    presentation: 'modal',
-                  }}
-                />
-              </Stack.Navigator>
-            </NavigationContainer>
-          </ExpenseProvider>
+          <AuthProvider>
+            <ExpenseProvider>
+              <NavigationContainer>
+                <RootNavigator />
+              </NavigationContainer>
+            </ExpenseProvider>
+          </AuthProvider>
         </ErrorBoundary>
       </SafeAreaView>
     </>

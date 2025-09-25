@@ -1,9 +1,17 @@
 import { request } from './request';
 import { ExpenseData } from '../model/expenses.model';
+import * as SecureStore from 'expo-secure-store';
+
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const token = await SecureStore.getItemAsync('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 export async function storeExpense(expense: ExpenseData) {
   try {
-    const response = await request('api/store', {
+    const authHeaders = await getAuthHeaders();
+
+    const response = await request('store', {
       method: 'POST',
       body: JSON.stringify({
         amount: expense.amount,
@@ -11,6 +19,7 @@ export async function storeExpense(expense: ExpenseData) {
         description: expense.description,
       }),
       headers: {
+        ...authHeaders,
         'Content-Type': 'application/json',
       },
     });
@@ -28,7 +37,11 @@ export async function storeExpense(expense: ExpenseData) {
 
 export async function fetchExpenses() {
   try {
-    const response = await request('api/expenses');
+    const authHeaders = await getAuthHeaders();
+
+    const response = await request('expenses', {
+      headers: authHeaders,
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to fetch expenses: ${response.status}`);
@@ -43,7 +56,9 @@ export async function fetchExpenses() {
 
 export async function updateExpense(id: string, expense: ExpenseData) {
   try {
-    const response = await request(`api/expenses/${id}`, {
+    const authHeaders = await getAuthHeaders();
+
+    const response = await request(`expenses/${id}`, {
       method: 'PUT',
       body: JSON.stringify({
         amount: expense.amount,
@@ -51,6 +66,7 @@ export async function updateExpense(id: string, expense: ExpenseData) {
         description: expense.description,
       }),
       headers: {
+        ...authHeaders,
         'Content-Type': 'application/json',
       },
     });
@@ -68,8 +84,11 @@ export async function updateExpense(id: string, expense: ExpenseData) {
 
 export async function deleteExpense(id: string) {
   try {
-    const response = await request(`api/expenses/${id}`, {
+    const authHeaders = await getAuthHeaders();
+
+    const response = await request(`expenses/${id}`, {
       method: 'DELETE',
+      headers: authHeaders,
     });
 
     if (!response.ok) {

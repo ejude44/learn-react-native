@@ -1,10 +1,8 @@
-import { Expense } from '../model/expenses.model';
-
 function generateId(): string {
   return Math.random().toString(36) + Date.now().toString(36);
 }
 
-const DUMMY_EXPENSES: Expense[] = [
+const DUMMY_EXPENSES = [
   {
     id: generateId(),
     description: 'A Pair of shoes',

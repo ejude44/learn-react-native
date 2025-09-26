@@ -1,10 +1,9 @@
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
     shouldShowBanner: true,
@@ -23,7 +22,7 @@ export async function setupNotifications() {
   if (Device.isDevice) {
     const { status } = await Notifications.requestPermissionsAsync();
     if (status !== 'granted') {
-      alert('Notification permissions needed for daily reminders');
+      Alert.alert('Notification permissions needed for daily reminders');
       return false;
     }
     return true;

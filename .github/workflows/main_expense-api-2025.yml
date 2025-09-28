@@ -26,9 +26,9 @@ jobs:
       - name: npm install, build, and generate Prisma client
         working-directory: ./expense-backend
         run: |
-          npm install
+          npm ci --production=false
           npx prisma generate
-          npm run build --if-present
+          npm run build
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4

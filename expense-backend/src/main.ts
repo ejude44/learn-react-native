@@ -3,20 +3,25 @@ import { AppModule } from './app/app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  try {
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.setGlobalPrefix('api');
+    app.setGlobalPrefix('api');
 
-  app.enableCors({
-    origin: 'true',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  });
+    app.enableCors({
+      origin: 'true',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      credentials: true,
+    });
 
-  const port = process.env.PORT || 3000;
-  await app.init();
+    await app.init();
 
-  await app.listen(port, '0.0.0.0');
-  console.log(`Application is running on port ${port}`);
+    const port = process.env.PORT || 8080;
+    await app.listen(port, '0.0.0.0');
+    console.log(`Application is running on port ${port}`);
+  } catch (error) {
+    console.error('Failed to start application:', error);
+    process.exit(1);
+  }
 }
 bootstrap();

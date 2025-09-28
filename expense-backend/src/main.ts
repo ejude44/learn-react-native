@@ -7,11 +7,16 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  const port = process.env.PORT || 4001;
+  app.enableCors({
+    origin: 'true',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
+  const port = process.env.PORT || 3000;
   await app.init();
 
-  await app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
+  await app.listen(port, '0.0.0.0');
+  console.log(`Application is running on port ${port}`);
 }
 bootstrap();

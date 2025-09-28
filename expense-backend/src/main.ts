@@ -4,6 +4,8 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
   try {
+    console.log(`try start app`);
+
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
     app.setGlobalPrefix('api');

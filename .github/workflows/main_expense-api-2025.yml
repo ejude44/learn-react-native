@@ -27,7 +27,6 @@ jobs:
         working-directory: ./expense-backend
         run: |
           npm ci --production=false
-          npx prisma generate
           npm run build
 
       - name: Upload artifact for deployment job

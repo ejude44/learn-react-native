@@ -8,7 +8,7 @@ import { CreateExpenseDto } from './models/create-expense.model';
 
 @Injectable()
 export class ExpenseService {
-  constructor(private prisma: PrismaService) {}
+  //constructor(private prisma: PrismaService) {}
 
   async create(createExpenseDto: CreateExpenseDto, userId: string) {
     return this.prisma.expense.create({

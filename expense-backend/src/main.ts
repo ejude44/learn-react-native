@@ -7,8 +7,11 @@ dotenv.config();
 
 async function bootstrap() {
   try {
-    console.log(`try start app`);
-
+    console.log(`Starting app with NODE_ENV: ${process.env.NODE_ENV}`);
+    console.log(`DATABASE_URL exists: ${!!process.env.DATABASE_URL}`);
+    console.log(
+      `DATABASE_URL format: ${process.env.DATABASE_URL?.substring(0, 20)}...`,
+    );
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
     app.setGlobalPrefix('api');

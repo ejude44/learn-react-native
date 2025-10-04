@@ -29,12 +29,9 @@ jobs:
           npm ci --production=false
           npx prisma generate
           npm run build
+          ls -la dist/ 
           rm -rf node_modules
-          echo '#!/bin/bash' > start.sh
-          echo 'npm install --production' >> start.sh
-          echo 'npx prisma generate' >> start.sh
-          echo 'node dist/main.js' >> start.sh
-          chmod +x start.sh
+          
           
 
 

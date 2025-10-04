@@ -31,7 +31,23 @@ jobs:
           npm run build
           ls -la dist/ 
           rm -rf node_modules
-          
+          echo '#!/bin/bash' > start.sh
+          echo 'echo "=== Starting application ==="' >> start.sh
+          echo 'echo "Current directory: $(pwd)"' >> start.sh
+          echo 'echo "Files in current directory:"' >> start.sh
+          echo 'ls -la' >> start.sh
+          echo 'echo "Files in dist directory:"' >> start.sh
+          echo 'ls -la dist/' >> start.sh
+          echo 'echo "NODE_ENV: $NODE_ENV"' >> start.sh
+          echo 'echo "DATABASE_URL exists: $([[ -n \"$DATABASE_URL\" ]] && echo \"YES\" || echo \"NO\")"' >> start.sh
+          echo 'echo "=== Installing dependencies ==="' >> start.sh
+          echo 'npm install --production' >> start.sh
+          echo 'echo "=== Generating Prisma client ==="' >> start.sh
+          echo 'npx prisma generate' >> start.sh
+          echo 'echo "=== Starting Node.js app ==="' >> start.sh
+          echo 'node dist/main.js' >> start.sh
+          chmod +x start.sh
+           
           
 
 

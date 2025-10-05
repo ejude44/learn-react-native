@@ -1,6 +1,9 @@
 /// <reference lib="dom" />
 
-export const BASE_URL = 'http://192.168.0.186:4001/api';
+//export const BASE_URL = 'http://192.168.0.186:4001/api';
+
+export const BASE_URL =
+  'https://expense-env.politedune-7abf56ba.westus2.azurecontainerapps.io/api';
 
 type Init = RequestInit & {
   fetchErrorMessage?: string;

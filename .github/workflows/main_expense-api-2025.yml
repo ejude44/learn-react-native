@@ -21,6 +21,19 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_518D743781544F3FA466D9EF4BE82CCD }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_21756AB212C34ABAAD132D625835FA40 }}
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Run database migrations
+        working-directory: ./expense-backend
+        env:
+          DATABASE_URL: "postgresql://expenseadmin:YourSecurePassword123!@expense-db-single-2025.postgres.database.azure.com:5432/postgres?sslmode=require"
+        run: |
+          npm ci
+          npx prisma migrate deploy
+
       - name: Login to ACR
         run: az acr login --name expenseregistryy
 

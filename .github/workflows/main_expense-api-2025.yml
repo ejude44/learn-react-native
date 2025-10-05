@@ -21,13 +21,6 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_518D743781544F3FA466D9EF4BE82CCD }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_21756AB212C34ABAAD132D625835FA40 }}
 
-      - name: List all Container Apps
-        run: |
-          echo "=== All Container Apps in subscription ==="
-          az containerapp list --output table
-          echo "=== Container Apps in expense-app-rg ==="
-          az containerapp list --resource-group expense-app-rg --output table
-
       - name: Login to ACR
         run: az acr login --name expenseregistryy
 
@@ -37,7 +30,6 @@ jobs:
           docker build -t expenseregistryy.azurecr.io/expense-api:${{ github.sha }} .
           docker push expenseregistryy.azurecr.io/expense-api:${{ github.sha }}
 
-      # Comment out the deploy step until we find the correct name
-      # - name: Deploy to Container App
-      #   run: |
-      #     az containerapp update --name expense-env --resource-group expense-app-rg --image expenseregistryy.azurecr.io/expense-api:${{ github.sha }}
+      - name: Deploy to Container App
+        run: |
+          az containerapp update --name expense-env --resource-group expense-app-rg --image expenseregistryy.azurecr.io/expense-api:${{ github.sha }}

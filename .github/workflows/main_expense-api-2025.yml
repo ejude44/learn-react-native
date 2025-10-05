@@ -32,4 +32,4 @@ jobs:
 
       - name: Deploy to Container App
         run: |
-          az containerapp update --name expense-api-2025 --resource-group expense-app-rg --image expenseregistryy.azurecr.io/expense-api:${{ github.sha }}
+          az containerapp update --name expense-env --resource-group expense-app-rg --image expenseregistryy.azurecr.io/expense-api:${{ github.sha }}

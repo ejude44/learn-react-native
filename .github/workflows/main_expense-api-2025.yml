@@ -23,5 +23,5 @@ jobs:
 
       - name: Build and deploy
         run: |
-          az acr build --registry expenseregistryy --image expense-api:${{ github.sha }} ./expense-backend
+          az acr build --registry expenseregistryy --resource-group expense-app-rg --image expense-api:${{ github.sha }} ./expense-backend
           az containerapp update --name expense-api-2025 --resource-group expense-app-rg --image expenseregistryy.azurecr.io/expense-api:${{ github.sha }}
